@@ -6,6 +6,7 @@ console.log("Loading Page Protection Request Maker...");
 
 function createFormWindow() {
     let Window = new Morebits.simpleWindow(620, 530);
+    Window.display();
 }
 
 if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
