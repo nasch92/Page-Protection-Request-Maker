@@ -4,6 +4,9 @@ mw.loader.load('https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-more
 //Test
 console.log("Loading Page Protection Request Maker...");
 
+let nominatedPageName = mw.config.get('wgPageName')
+let nominatedPageNameWithoutUnderscores = nominatedPageName.replaceAll('_', ' ')
+
 let listProtectionOptions = [
 	{ code: "protección", name: "Solicitar protección", default: true },
 	{ code: "desprotección", name: "Solicitar desprotección" }
