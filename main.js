@@ -38,6 +38,16 @@ function getMotiveOptions() {
 	return dropDownOptions
 }
 
+function createStatusWindow() {
+	let Window = new Morebits.simpleWindow(400, 350);
+	Window.setTitle('Procesando acciones');
+	var statusdiv = document.createElement('div');
+	statusdiv.style.padding = '15px';  // just so it doesn't look broken
+	Window.setContent(statusdiv);
+	Morebits.status.init(statusdiv);
+	Window.display();
+}
+
 function createFormWindow() {
 	let Window = new Morebits.simpleWindow(620, 530);
 	Window.setTitle('Solicitar protección de la página');
@@ -51,6 +61,10 @@ function createFormWindow() {
 	radioField.append({
 		type: 'radio',
 		name: 'protection',
+		event:
+			function (e) {
+				$("select[name='motive']").prop('disabled', e.target.value !== "protección")
+			},
 		list: getProtectionTypeOptions()
 	})
 
@@ -63,7 +77,8 @@ function createFormWindow() {
 		type: 'select',
 		name: 'motive',
 		label: 'Selecciona el motivo:',
-		list: getMotiveOptions()
+		list: getMotiveOptions(),
+		disabled: false
 	});
 
 	textAreaAndReasonField.append({
@@ -85,7 +100,16 @@ function createFormWindow() {
 function submitMessage(e) {
 	let form = e.target;
 	let input = Morebits.quickForm.getInputData(form);
-	console.log(input.protection)
+	if (input.reason === ``) {
+		alert("No se ha establecido un motivo.");
+	} else {
+		if (window.confirm(`¿Quieres solicitar la ${input.protection} del artículo ${nominatedPageNameWithoutUnderscores}?`)) {
+			console.log("Posting message on the noticeboard...")
+			createStatusWindow()
+			new Morebits.status("Paso 1", `Solicitando la ${input.protection} de la página...`, "info");
+		}
+
+	}
 }
 
 if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
