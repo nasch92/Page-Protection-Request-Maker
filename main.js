@@ -1,7 +1,7 @@
+//<nowiki>
 mw.loader.load('https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-morebits.js&action=raw&ctype=text/javascript');
 mw.loader.load('https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-morebits.css&action=raw&ctype=text/css', 'text/css');
 
-//Test
 console.log("Loading Page Protection Request Maker...");
 
 let pageName = mw.config.get('wgPageName')
@@ -70,7 +70,7 @@ function getProtectionStatus() {
 function createStatusWindow() {
 	let Window = new Morebits.simpleWindow(400, 350);
 	Window.setTitle('Procesando acciones');
-	var statusdiv = document.createElement('div');
+	let statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
@@ -156,7 +156,12 @@ function submitMessage(e) {
 			new mw.Api().edit(
 				"Usuario:Nacaru/Taller/Tests", // a modificar por «Wikipedia:Tablón_de_anuncios_de_los_bibliotecarios/Portal/Archivo/Protección_de_artículos/Actual» tras tests
 				buildEditOnNoticedBoard(input)
-			);
+			)
+				.then(function () {
+					console.log('Refreshing...');
+					new Morebits.status("Finalizado", "actualizando página...", "status");
+					setTimeout(() => { location.reload() }, 1500);
+				})
 		}
 
 	}
@@ -165,7 +170,9 @@ function submitMessage(e) {
 function buildEditOnNoticedBoard(input) {
 	let title = `== Solicitud de ${input.protection} de [[${pageNameWithoutUnderscores}]] ==`;
 	if (input.protection === 'protección') {
-		title = `== Solicitud de ${input.protection} de [[${pageNameWithoutUnderscores}]] por ${input.motive.toLowerCase()} ==`;
+		if (input.motive !== 'Otro') {
+			title = `== Solicitud de ${input.protection} de [[${pageNameWithoutUnderscores}]] por ${input.motive.toLowerCase()} ==`;
+		}
 	};
 	return (revision) => {
 		return {
@@ -193,3 +200,5 @@ if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
 	let portletLink = mw.util.addPortletLink('p-cactions', '#', 'Pedir protección', 'example-button', 'Solicita que esta página sea protegida');
 	portletLink.onclick = createFormWindow;
 }
+
+//</nowiki>
