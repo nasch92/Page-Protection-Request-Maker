@@ -139,7 +139,7 @@ function createFormWindow() {
 
 	getProtectionStatus().then(function (protectionLevel) {
 		document.querySelector("div[name='currentProtection'] > span.quickformDescription")
-			.innerHTML = `Nivel actual de protección:<span style="color:green; font-weight: bold;"> ${protectionLevel} <span>`
+			.innerHTML = `Nivel actual de protección:<span style="color:royalblue; font-weight: bold;"> ${protectionLevel} <span>`
 	})
 }
 
