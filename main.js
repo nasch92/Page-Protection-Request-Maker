@@ -31,8 +31,8 @@ let listMotiveOptions = [
 
 function getMotiveOptions() {
 	let dropDownOptions = [];
-	for (let chosenType of listMotiveOptions) {
-		let option = { type: 'option', label: chosenType.name, checked: chosenType.default };
+	for (let motive of listMotiveOptions) {
+		let option = { type: 'option', value: motive.name, label: motive.name, checked: motive.default };
 		dropDownOptions.push(option);
 	}
 	return dropDownOptions
@@ -150,13 +150,42 @@ function submitMessage(e) {
 		alert("No se ha establecido un motivo.");
 	} else {
 		if (window.confirm(`¿Quieres solicitar la ${input.protection} del artículo ${pageNameWithoutUnderscores}?`)) {
-			console.log("Posting message on the noticeboard...")
-			createStatusWindow()
+			console.log("Posting message on the noticeboard...");
+			createStatusWindow();
 			new Morebits.status("Paso 1", `Solicitando la ${input.protection} de la página...`, "info");
+			new mw.Api().edit(
+				"Usuario:Nacaru/Taller/Tests", // a modificar por «Wikipedia:Tablón_de_anuncios_de_los_bibliotecarios/Portal/Archivo/Protección_de_artículos/Actual» tras tests
+				buildEditOnNoticedBoard(input)
+			);
 		}
 
 	}
 }
+
+function buildEditOnNoticedBoard(input) {
+	let title = `== Solicitud de ${input.protection} de [[${pageNameWithoutUnderscores}]] ==`;
+	if (input.protection === 'protección') {
+		title = `== Solicitud de ${input.protection} de [[${pageNameWithoutUnderscores}]] por ${input.motive.toLowerCase()} ==`;
+	};
+	return (revision) => {
+		return {
+			text: revision.content + `\n
+${title} \n
+;Artículo(s) \n
+* {{a|${pageNameWithoutUnderscores}}} \n
+;Causa \n
+${input.reason} \n
+; Usuario que lo solicita \n
+* ~~~~ \n
+;Respuesta \n
+(a rellenar por un bibliotecario)`,
+			summary: `Solicitando ${input.protection} de [[${pageNameWithoutUnderscores}]] mediante [[WP:Deletion Request Maker|Deletion Request Maker]].`,
+			minor: false
+		}
+	}
+}
+
+
 
 if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
 	console.log("Special or non-existent page: PPRM will therefore not be loaded.");
